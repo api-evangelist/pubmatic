@@ -1,0 +1,115 @@
+aid: pubmatic
+name: PubMatic
+description: >-
+  PubMatic is a Redwood City, California-headquartered independent technology
+  company (NASDAQ: PUBM) operating a supply-side platform (SSP) that powers
+  programmatic advertising for publishers, media buyers, commerce media, and
+  AI agents across CTV, mobile app, online video, display, and audio. Its
+  unified platform combines an SSP for monetization and demand access, the
+  OpenWrap header-bidding wrapper (an open-source Prebid-based wrapper with
+  web, iOS, Android, Flutter, and Unity SDKs), Connect for curation and
+  audience activation, Activate for buyer-side supply-path optimization and
+  direct-to-publisher deals, Convert for commerce/retail media, Identity Hub
+  for identity orchestration, and AgenticOS for agent-driven campaign
+  planning and execution. PubMatic processes trillions of bids per day across
+  global infrastructure, and exposes its programmatic surface primarily via
+  the OpenRTB protocol, prebid integrations, and embedded SDKs rather than a
+  public REST developer portal — making this profile a directory of
+  PubMatic's products, OpenWrap repos, sample apps, and supply-chain
+  endpoints rather than a tier-1 OpenAPI-backed catalog.
+type: Index
+position: Provider
+access: 3rd-Party
+image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+tags:
+  - Advertising
+  - AdTech
+  - Programmatic Advertising
+  - Supply Side Platform
+  - SSP
+  - Header Bidding
+  - OpenWrap
+  - Prebid
+  - OpenRTB
+  - Connected TV
+  - CTV
+  - Mobile Advertising
+  - Commerce Media
+  - Retail Media
+  - Identity
+  - Curation
+  - Auction Packages
+  - Agentic AI
+url: https://raw.githubusercontent.com/api-evangelist/pubmatic/refs/heads/main/apis.yml
+created: '2026-05-25'
+modified: '2026-05-25'
+specificationVersion: '0.20'
+apis: []
+common:
+  - type: Website
+    url: https://pubmatic.com
+  - type: Publisher
+    url: https://pubmatic.com/products/publisher/
+  - type: Buyer
+    url: https://pubmatic.com/products/buyer/
+  - type: CommerceMedia
+    url: https://pubmatic.com/products/commerce-media/
+  - type: OpenWrap
+    url: https://pubmatic.com/products/openwrap/
+  - type: Connect
+    url: https://pubmatic.com/products/connect/
+  - type: Activate
+    url: https://pubmatic.com/products/activate/
+  - type: Convert
+    url: https://pubmatic.com/products/convert/
+  - type: IdentityHub
+    url: https://pubmatic.com/products/identity-hub/
+  - type: AgenticOS
+    url: https://pubmatic.com/products/agentic-os/
+  - type: AuctionPackages
+    url: https://pubmatic.com/products/auction-packages/
+  - type: HelpCenter
+    url: https://help.pubmatic.com
+  - type: GitHub
+    url: https://github.com/PubMatic
+  - type: OpenWrapRepo
+    url: https://github.com/PubMatic/OpenWrap
+  - type: OpenWrapSDKSwift
+    url: https://github.com/PubMatic/OpenWrapSDK-Swift-Package
+  - type: OpenWrapSDKFlutter
+    url: https://github.com/PubMatic/flutter-openwrap-sdk
+  - type: OpenWrapSamplesIOS
+    url: https://github.com/PubMatic/ios-openwrap-sdk-samples
+  - type: OpenWrapSamplesAndroid
+    url: https://github.com/PubMatic/android-openwrap-sdk-samples
+  - type: OpenWrapSamplesUnity
+    url: https://github.com/PubMatic/unity-openwrap-sdk-samples
+  - type: MCPServer
+    url: https://github.com/PubMatic/pubmatic-mcp-server
+  - type: SKAdNetworkApp
+    url: https://github.com/PubMatic/PubMatic-SKAdNetwork-App
+  - type: SupplyChain
+    url: https://pubmatic.com/legal/sellers-json/
+  - type: AdsTxt
+    url: https://pubmatic.com/ads.txt
+  - type: Investors
+    url: https://investors.pubmatic.com
+  - type: Newsroom
+    url: https://pubmatic.com/news/
+  - type: Blog
+    url: https://pubmatic.com/blog/
+  - type: Careers
+    url: https://pubmatic.com/careers/
+  - type: Contact
+    url: https://pubmatic.com/contact-us/
+  - type: Privacy
+    url: https://pubmatic.com/legal/privacy-policy/
+  - type: Twitter
+    url: https://twitter.com/pubmatic
+  - type: LinkedIn
+    url: https://www.linkedin.com/company/pubmatic
+  - type: YouTube
+    url: https://www.youtube.com/@PubMatic
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com
