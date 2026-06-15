@@ -1,0 +1,1086 @@
+"""
+PubMatic GraphQL Schema
+Conceptual schema derived from PubMatic's supply-side platform (SSP) API surface,
+covering inventory management, deals, private marketplaces, audience segments,
+yield analytics, and programmatic direct workflows.
+"""
+
+# ─────────────────────────────────────────────
+# Scalar Types
+# ─────────────────────────────────────────────
+
+scalar DateTime
+scalar JSON
+scalar URL
+scalar BigInt
+
+# ─────────────────────────────────────────────
+# Enums
+# ─────────────────────────────────────────────
+
+enum AdFormat {
+  DISPLAY
+  VIDEO
+  NATIVE
+  AUDIO
+  CTV
+  INTERSTITIAL
+  REWARDED
+  BANNER
+  RICH_MEDIA
+}
+
+enum AdSlotStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+  ARCHIVED
+  SUSPENDED
+}
+
+enum DealType {
+  PREFERRED
+  GUARANTEED
+  PRIVATE_AUCTION
+  OPEN_AUCTION
+  PROGRAMMATIC_GUARANTEED
+}
+
+enum DealStatus {
+  ACTIVE
+  PAUSED
+  PENDING
+  EXPIRED
+  REJECTED
+  DRAFT
+}
+
+enum InventoryType {
+  WEB
+  APP
+  CTV
+  AUDIO
+  DOOH
+  AMP
+}
+
+enum PricingModel {
+  CPM
+  CPC
+  CPV
+  VCPM
+  FLAT
+}
+
+enum AudienceSegmentStatus {
+  ACTIVE
+  INACTIVE
+  BUILDING
+  EXPIRED
+}
+
+enum AudienceSegmentType {
+  FIRST_PARTY
+  THIRD_PARTY
+  CONTEXTUAL
+  LOOKALIKE
+  RETARGETING
+  BEHAVIORAL
+}
+
+enum ReportGranularity {
+  HOURLY
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+enum ReportDimension {
+  SITE
+  AD_SLOT
+  DEAL
+  BUYER
+  COUNTRY
+  DEVICE_TYPE
+  AD_FORMAT
+  AUDIENCE_SEGMENT
+  SUPPLY_PATH
+}
+
+enum ReportMetric {
+  IMPRESSIONS
+  CLICKS
+  REVENUE
+  CPM
+  FILL_RATE
+  WIN_RATE
+  BID_REQUESTS
+  BID_RESPONSES
+  VIEWABILITY
+  COMPLETION_RATE
+}
+
+enum DeviceType {
+  DESKTOP
+  MOBILE
+  TABLET
+  CTV
+  AUDIO_DEVICE
+  DOOH_SCREEN
+}
+
+enum TargetingOperator {
+  INCLUDE
+  EXCLUDE
+}
+
+enum BuyerStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+  PENDING_APPROVAL
+}
+
+enum PublisherStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING
+}
+
+enum VideoProtocol {
+  VAST_2_0
+  VAST_3_0
+  VAST_4_0
+  VPAID_1_0
+  VPAID_2_0
+}
+
+enum VideoPlacement {
+  IN_STREAM
+  IN_BANNER
+  IN_ARTICLE
+  IN_FEED
+  INTERSTITIAL
+}
+
+enum AdQualityCategory {
+  GAMBLING
+  ADULT
+  POLITICAL
+  ALCOHOL
+  PHARMA
+  FIREARMS
+  FINANCIAL
+}
+
+enum CurationPackageStatus {
+  ACTIVE
+  INACTIVE
+  DRAFT
+  PENDING_REVIEW
+}
+
+enum IdentityProvider {
+  LIVERAMP
+  UNIFIED_ID_2
+  ID5
+  FIRST_ID
+  PUBMATIC_IDENTITY
+  GOOGLE_ENCRYPTED
+}
+
+enum SupplyPathOptimizationStatus {
+  ENABLED
+  DISABLED
+}
+
+enum AlertSeverity {
+  INFO
+  WARNING
+  CRITICAL
+}
+
+# ─────────────────────────────────────────────
+# Core Resource Types
+# ─────────────────────────────────────────────
+
+type Publisher {
+  id: ID!
+  name: String!
+  status: PublisherStatus!
+  website: URL
+  email: String
+  country: String
+  currency: String
+  revenueShare: Float
+  adQualitySettings: AdQualitySettings
+  sites: [Site!]!
+  deals: [Deal!]!
+  audienceSegments: [AudienceSegment!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Site {
+  id: ID!
+  publisherId: ID!
+  publisher: Publisher!
+  name: String!
+  domain: URL!
+  inventoryType: InventoryType!
+  status: AdSlotStatus!
+  adSlots: [AdSlot!]!
+  categories: [String!]!
+  adsTxtStatus: AdsTxtStatus
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type AdSlot {
+  id: ID!
+  siteId: ID!
+  site: Site!
+  name: String!
+  adFormats: [AdFormat!]!
+  sizes: [AdSize!]!
+  floorPrice: Float
+  currency: String
+  status: AdSlotStatus!
+  inventoryType: InventoryType!
+  videoSettings: VideoSettings
+  nativeSettings: NativeSettings
+  targeting: TargetingSettings
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type AdSize {
+  width: Int!
+  height: Int!
+}
+
+type VideoSettings {
+  placement: VideoPlacement!
+  protocols: [VideoProtocol!]!
+  minDuration: Int
+  maxDuration: Int
+  mimes: [String!]!
+  skipEnabled: Boolean
+  skipOffset: Int
+}
+
+type NativeSettings {
+  titleRequired: Boolean
+  descriptionRequired: Boolean
+  imageRequired: Boolean
+  iconRequired: Boolean
+  clickthroughRequired: Boolean
+}
+
+type Deal {
+  id: ID!
+  name: String!
+  dealType: DealType!
+  status: DealStatus!
+  publisher: Publisher!
+  buyers: [Buyer!]!
+  floorPrice: Float!
+  currency: String!
+  pricingModel: PricingModel!
+  startDate: DateTime!
+  endDate: DateTime
+  targeting: DealTargeting
+  inventoryList: [AdSlot!]!
+  audienceSegments: [AudienceSegment!]!
+  impressionGoal: BigInt
+  revenueGoal: Float
+  pacingEnabled: Boolean
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type PrivateMarketplace {
+  id: ID!
+  name: String!
+  description: String
+  publisher: Publisher!
+  deals: [Deal!]!
+  status: DealStatus!
+  buyerInvitations: [BuyerInvitation!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Buyer {
+  id: ID!
+  name: String!
+  seatId: String!
+  dspName: String
+  status: BuyerStatus!
+  deals: [Deal!]!
+  blocklist: BlocklistSettings
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type BuyerInvitation {
+  id: ID!
+  buyerId: ID!
+  buyer: Buyer!
+  privateMarketplaceId: ID!
+  status: String!
+  invitedAt: DateTime!
+  respondedAt: DateTime
+}
+
+type AudienceSegment {
+  id: ID!
+  name: String!
+  description: String
+  publisherId: ID!
+  publisher: Publisher!
+  segmentType: AudienceSegmentType!
+  status: AudienceSegmentStatus!
+  provider: String
+  taxonomy: String
+  userCount: BigInt
+  cpm: Float
+  currency: String
+  expiresAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type AdQualitySettings {
+  blockedCategories: [AdQualityCategory!]!
+  blockedAdvertiserDomains: [String!]!
+  blockedAttributes: [Int!]!
+  safeScanEnabled: Boolean
+}
+
+type AdsTxtStatus {
+  valid: Boolean!
+  lastChecked: DateTime
+  missingEntries: [String!]!
+  url: URL
+}
+
+type DealTargeting {
+  geoTargeting: GeoTargeting
+  deviceTargeting: DeviceTargeting
+  audienceTargeting: AudienceTargeting
+  contentTargeting: ContentTargeting
+  daypartTargeting: DaypartTargeting
+}
+
+type TargetingSettings {
+  geoTargeting: GeoTargeting
+  deviceTargeting: DeviceTargeting
+  audienceTargeting: AudienceTargeting
+}
+
+type GeoTargeting {
+  operator: TargetingOperator!
+  countries: [String!]!
+  regions: [String!]!
+  cities: [String!]!
+  zipCodes: [String!]!
+  dmas: [String!]!
+}
+
+type DeviceTargeting {
+  operator: TargetingOperator!
+  deviceTypes: [DeviceType!]!
+  operatingSystems: [String!]!
+  browsers: [String!]!
+}
+
+type AudienceTargeting {
+  operator: TargetingOperator!
+  segmentIds: [ID!]!
+}
+
+type ContentTargeting {
+  operator: TargetingOperator!
+  categories: [String!]!
+  keywords: [String!]!
+}
+
+type DaypartTargeting {
+  timezone: String!
+  dayparts: [Daypart!]!
+}
+
+type Daypart {
+  dayOfWeek: Int!
+  startHour: Int!
+  endHour: Int!
+}
+
+type BlocklistSettings {
+  domains: [String!]!
+  apps: [String!]!
+  categories: [AdQualityCategory!]!
+}
+
+type YieldReport {
+  id: ID!
+  publisherId: ID!
+  granularity: ReportGranularity!
+  startDate: DateTime!
+  endDate: DateTime!
+  dimensions: [ReportDimension!]!
+  metrics: [ReportMetric!]!
+  rows: [YieldReportRow!]!
+  generatedAt: DateTime!
+}
+
+type YieldReportRow {
+  dimensions: JSON!
+  impressions: BigInt
+  clicks: BigInt
+  revenue: Float
+  cpm: Float
+  fillRate: Float
+  winRate: Float
+  bidRequests: BigInt
+  bidResponses: BigInt
+  viewability: Float
+  completionRate: Float
+}
+
+type CurationPackage {
+  id: ID!
+  name: String!
+  description: String
+  status: CurationPackageStatus!
+  publisher: Publisher!
+  buyers: [Buyer!]!
+  inventoryList: [AdSlot!]!
+  audienceSegments: [AudienceSegment!]!
+  floorPrice: Float
+  currency: String
+  dealType: DealType!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type IdentityMapping {
+  id: ID!
+  publisherId: ID!
+  provider: IdentityProvider!
+  enabled: Boolean!
+  signalContribution: Float
+  resolvedUsers: BigInt
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type SupplyPath {
+  id: ID!
+  publisherId: ID!
+  sellerId: String!
+  sellerType: String!
+  domain: String
+  status: SupplyPathOptimizationStatus!
+  isDirectPath: Boolean!
+  hops: Int!
+}
+
+type OpenWrapConfig {
+  id: ID!
+  siteId: ID!
+  site: Site!
+  version: String!
+  adUnit: String!
+  bidders: [OpenWrapBidder!]!
+  timeout: Int
+  enabledFormats: [AdFormat!]!
+  updatedAt: DateTime!
+}
+
+type OpenWrapBidder {
+  name: String!
+  enabled: Boolean!
+  params: JSON
+  floorPrice: Float
+}
+
+type Alert {
+  id: ID!
+  publisherId: ID!
+  severity: AlertSeverity!
+  title: String!
+  message: String!
+  isRead: Boolean!
+  createdAt: DateTime!
+}
+
+type ApiKey {
+  id: ID!
+  publisherId: ID!
+  name: String!
+  keyPreview: String!
+  scopes: [String!]!
+  expiresAt: DateTime
+  createdAt: DateTime!
+}
+
+# ─────────────────────────────────────────────
+# Pagination / Connection Types
+# ─────────────────────────────────────────────
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+  totalCount: Int!
+}
+
+type PublisherConnection {
+  edges: [PublisherEdge!]!
+  pageInfo: PageInfo!
+}
+
+type PublisherEdge {
+  cursor: String!
+  node: Publisher!
+}
+
+type SiteConnection {
+  edges: [SiteEdge!]!
+  pageInfo: PageInfo!
+}
+
+type SiteEdge {
+  cursor: String!
+  node: Site!
+}
+
+type AdSlotConnection {
+  edges: [AdSlotEdge!]!
+  pageInfo: PageInfo!
+}
+
+type AdSlotEdge {
+  cursor: String!
+  node: AdSlot!
+}
+
+type DealConnection {
+  edges: [DealEdge!]!
+  pageInfo: PageInfo!
+}
+
+type DealEdge {
+  cursor: String!
+  node: Deal!
+}
+
+type AudienceSegmentConnection {
+  edges: [AudienceSegmentEdge!]!
+  pageInfo: PageInfo!
+}
+
+type AudienceSegmentEdge {
+  cursor: String!
+  node: AudienceSegment!
+}
+
+type BuyerConnection {
+  edges: [BuyerEdge!]!
+  pageInfo: PageInfo!
+}
+
+type BuyerEdge {
+  cursor: String!
+  node: Buyer!
+}
+
+type CurationPackageConnection {
+  edges: [CurationPackageEdge!]!
+  pageInfo: PageInfo!
+}
+
+type CurationPackageEdge {
+  cursor: String!
+  node: CurationPackage!
+}
+
+# ─────────────────────────────────────────────
+# Input Types
+# ─────────────────────────────────────────────
+
+input CreatePublisherInput {
+  name: String!
+  website: URL
+  email: String!
+  country: String!
+  currency: String!
+  revenueShare: Float
+}
+
+input UpdatePublisherInput {
+  name: String
+  website: URL
+  email: String
+  country: String
+  currency: String
+  revenueShare: Float
+  status: PublisherStatus
+}
+
+input CreateSiteInput {
+  publisherId: ID!
+  name: String!
+  domain: URL!
+  inventoryType: InventoryType!
+  categories: [String!]
+}
+
+input UpdateSiteInput {
+  name: String
+  domain: URL
+  inventoryType: InventoryType
+  categories: [String!]
+  status: AdSlotStatus
+}
+
+input CreateAdSlotInput {
+  siteId: ID!
+  name: String!
+  adFormats: [AdFormat!]!
+  sizes: [AdSizeInput!]!
+  floorPrice: Float
+  currency: String
+  inventoryType: InventoryType!
+  videoSettings: VideoSettingsInput
+  nativeSettings: NativeSettingsInput
+}
+
+input UpdateAdSlotInput {
+  name: String
+  adFormats: [AdFormat!]
+  sizes: [AdSizeInput!]
+  floorPrice: Float
+  currency: String
+  status: AdSlotStatus
+  videoSettings: VideoSettingsInput
+  nativeSettings: NativeSettingsInput
+}
+
+input AdSizeInput {
+  width: Int!
+  height: Int!
+}
+
+input VideoSettingsInput {
+  placement: VideoPlacement!
+  protocols: [VideoProtocol!]!
+  minDuration: Int
+  maxDuration: Int
+  mimes: [String!]!
+  skipEnabled: Boolean
+  skipOffset: Int
+}
+
+input NativeSettingsInput {
+  titleRequired: Boolean
+  descriptionRequired: Boolean
+  imageRequired: Boolean
+  iconRequired: Boolean
+  clickthroughRequired: Boolean
+}
+
+input CreateDealInput {
+  name: String!
+  dealType: DealType!
+  publisherId: ID!
+  buyerIds: [ID!]!
+  floorPrice: Float!
+  currency: String!
+  pricingModel: PricingModel!
+  startDate: DateTime!
+  endDate: DateTime
+  adSlotIds: [ID!]
+  audienceSegmentIds: [ID!]
+  impressionGoal: BigInt
+  revenueGoal: Float
+  pacingEnabled: Boolean
+  targeting: DealTargetingInput
+}
+
+input UpdateDealInput {
+  name: String
+  status: DealStatus
+  floorPrice: Float
+  endDate: DateTime
+  buyerIds: [ID!]
+  adSlotIds: [ID!]
+  audienceSegmentIds: [ID!]
+  impressionGoal: BigInt
+  revenueGoal: Float
+  pacingEnabled: Boolean
+  targeting: DealTargetingInput
+}
+
+input DealTargetingInput {
+  geoTargeting: GeoTargetingInput
+  deviceTargeting: DeviceTargetingInput
+  audienceTargeting: AudienceTargetingInput
+  contentTargeting: ContentTargetingInput
+  daypartTargeting: DaypartTargetingInput
+}
+
+input GeoTargetingInput {
+  operator: TargetingOperator!
+  countries: [String!]
+  regions: [String!]
+  cities: [String!]
+  zipCodes: [String!]
+  dmas: [String!]
+}
+
+input DeviceTargetingInput {
+  operator: TargetingOperator!
+  deviceTypes: [DeviceType!]
+  operatingSystems: [String!]
+  browsers: [String!]
+}
+
+input AudienceTargetingInput {
+  operator: TargetingOperator!
+  segmentIds: [ID!]!
+}
+
+input ContentTargetingInput {
+  operator: TargetingOperator!
+  categories: [String!]
+  keywords: [String!]
+}
+
+input DaypartTargetingInput {
+  timezone: String!
+  dayparts: [DaypartInput!]!
+}
+
+input DaypartInput {
+  dayOfWeek: Int!
+  startHour: Int!
+  endHour: Int!
+}
+
+input CreateAudienceSegmentInput {
+  publisherId: ID!
+  name: String!
+  description: String
+  segmentType: AudienceSegmentType!
+  provider: String
+  taxonomy: String
+  cpm: Float
+  currency: String
+  expiresAt: DateTime
+}
+
+input UpdateAudienceSegmentInput {
+  name: String
+  description: String
+  status: AudienceSegmentStatus
+  cpm: Float
+  currency: String
+  expiresAt: DateTime
+}
+
+input CreatePrivateMarketplaceInput {
+  name: String!
+  description: String
+  publisherId: ID!
+  buyerIds: [ID!]
+}
+
+input UpdatePrivateMarketplaceInput {
+  name: String
+  description: String
+  status: DealStatus
+}
+
+input InviteBuyerInput {
+  privateMarketplaceId: ID!
+  buyerIds: [ID!]!
+}
+
+input CreateCurationPackageInput {
+  name: String!
+  description: String
+  publisherId: ID!
+  buyerIds: [ID!]
+  adSlotIds: [ID!]!
+  audienceSegmentIds: [ID!]
+  floorPrice: Float
+  currency: String
+  dealType: DealType!
+}
+
+input UpdateCurationPackageInput {
+  name: String
+  description: String
+  status: CurationPackageStatus
+  buyerIds: [ID!]
+  adSlotIds: [ID!]
+  audienceSegmentIds: [ID!]
+  floorPrice: Float
+}
+
+input YieldReportRequestInput {
+  publisherId: ID!
+  startDate: DateTime!
+  endDate: DateTime!
+  granularity: ReportGranularity!
+  dimensions: [ReportDimension!]!
+  metrics: [ReportMetric!]!
+  filters: JSON
+}
+
+input UpdateAdQualityInput {
+  publisherId: ID!
+  blockedCategories: [AdQualityCategory!]
+  blockedAdvertiserDomains: [String!]
+  blockedAttributes: [Int!]
+  safeScanEnabled: Boolean
+}
+
+input UpdateOpenWrapConfigInput {
+  siteId: ID!
+  timeout: Int
+  enabledFormats: [AdFormat!]
+  bidders: [OpenWrapBidderInput!]
+}
+
+input OpenWrapBidderInput {
+  name: String!
+  enabled: Boolean!
+  params: JSON
+  floorPrice: Float
+}
+
+input CreateApiKeyInput {
+  publisherId: ID!
+  name: String!
+  scopes: [String!]!
+  expiresAt: DateTime
+}
+
+input PaginationInput {
+  first: Int
+  after: String
+  last: Int
+  before: String
+}
+
+input DateRangeInput {
+  startDate: DateTime!
+  endDate: DateTime!
+}
+
+# ─────────────────────────────────────────────
+# Payload / Response Types
+# ─────────────────────────────────────────────
+
+type PublisherPayload {
+  publisher: Publisher
+  errors: [UserError!]!
+}
+
+type SitePayload {
+  site: Site
+  errors: [UserError!]!
+}
+
+type AdSlotPayload {
+  adSlot: AdSlot
+  errors: [UserError!]!
+}
+
+type DealPayload {
+  deal: Deal
+  errors: [UserError!]!
+}
+
+type PrivateMarketplacePayload {
+  privateMarketplace: PrivateMarketplace
+  errors: [UserError!]!
+}
+
+type AudienceSegmentPayload {
+  audienceSegment: AudienceSegment
+  errors: [UserError!]!
+}
+
+type CurationPackagePayload {
+  curationPackage: CurationPackage
+  errors: [UserError!]!
+}
+
+type YieldReportPayload {
+  report: YieldReport
+  errors: [UserError!]!
+}
+
+type OpenWrapConfigPayload {
+  config: OpenWrapConfig
+  errors: [UserError!]!
+}
+
+type ApiKeyPayload {
+  apiKey: ApiKey
+  keyValue: String
+  errors: [UserError!]!
+}
+
+type DeletePayload {
+  id: ID!
+  success: Boolean!
+  errors: [UserError!]!
+}
+
+type UserError {
+  field: String
+  message: String!
+  code: String
+}
+
+# ─────────────────────────────────────────────
+# Query Root
+# ─────────────────────────────────────────────
+
+type Query {
+  # Publisher queries
+  publisher(id: ID!): Publisher
+  publishers(pagination: PaginationInput, status: PublisherStatus): PublisherConnection!
+
+  # Site queries
+  site(id: ID!): Site
+  sites(publisherId: ID!, pagination: PaginationInput, status: AdSlotStatus): SiteConnection!
+
+  # Ad slot queries
+  adSlot(id: ID!): AdSlot
+  adSlots(siteId: ID!, pagination: PaginationInput, status: AdSlotStatus, adFormat: AdFormat): AdSlotConnection!
+
+  # Deal queries
+  deal(id: ID!): Deal
+  deals(
+    publisherId: ID
+    buyerId: ID
+    dealType: DealType
+    status: DealStatus
+    pagination: PaginationInput
+  ): DealConnection!
+
+  # Private Marketplace queries
+  privateMarketplace(id: ID!): PrivateMarketplace
+  privateMarketplaces(publisherId: ID!, pagination: PaginationInput): [PrivateMarketplace!]!
+
+  # Buyer queries
+  buyer(id: ID!): Buyer
+  buyers(pagination: PaginationInput, status: BuyerStatus): BuyerConnection!
+
+  # Audience segment queries
+  audienceSegment(id: ID!): AudienceSegment
+  audienceSegments(
+    publisherId: ID
+    segmentType: AudienceSegmentType
+    status: AudienceSegmentStatus
+    pagination: PaginationInput
+  ): AudienceSegmentConnection!
+
+  # Curation package queries
+  curationPackage(id: ID!): CurationPackage
+  curationPackages(publisherId: ID!, status: CurationPackageStatus, pagination: PaginationInput): CurationPackageConnection!
+
+  # Yield analytics queries
+  yieldReport(id: ID!): YieldReport
+  yieldSummary(publisherId: ID!, dateRange: DateRangeInput!, granularity: ReportGranularity!): YieldReport
+
+  # Identity queries
+  identityMappings(publisherId: ID!): [IdentityMapping!]!
+  identityMapping(id: ID!): IdentityMapping
+
+  # Supply path queries
+  supplyPaths(publisherId: ID!): [SupplyPath!]!
+
+  # OpenWrap queries
+  openWrapConfig(siteId: ID!): OpenWrapConfig
+  openWrapConfigs(publisherId: ID!): [OpenWrapConfig!]!
+
+  # Alert queries
+  alerts(publisherId: ID!, severity: AlertSeverity, unreadOnly: Boolean): [Alert!]!
+
+  # API key queries
+  apiKeys(publisherId: ID!): [ApiKey!]!
+}
+
+# ─────────────────────────────────────────────
+# Mutation Root
+# ─────────────────────────────────────────────
+
+type Mutation {
+  # Publisher mutations
+  createPublisher(input: CreatePublisherInput!): PublisherPayload!
+  updatePublisher(id: ID!, input: UpdatePublisherInput!): PublisherPayload!
+  deletePublisher(id: ID!): DeletePayload!
+
+  # Site mutations
+  createSite(input: CreateSiteInput!): SitePayload!
+  updateSite(id: ID!, input: UpdateSiteInput!): SitePayload!
+  deleteSite(id: ID!): DeletePayload!
+
+  # Ad slot mutations
+  createAdSlot(input: CreateAdSlotInput!): AdSlotPayload!
+  updateAdSlot(id: ID!, input: UpdateAdSlotInput!): AdSlotPayload!
+  deleteAdSlot(id: ID!): DeletePayload!
+  bulkUpdateAdSlotStatus(ids: [ID!]!, status: AdSlotStatus!): [AdSlotPayload!]!
+
+  # Deal mutations
+  createDeal(input: CreateDealInput!): DealPayload!
+  updateDeal(id: ID!, input: UpdateDealInput!): DealPayload!
+  deleteDeal(id: ID!): DeletePayload!
+  activateDeal(id: ID!): DealPayload!
+  pauseDeal(id: ID!): DealPayload!
+
+  # Private Marketplace mutations
+  createPrivateMarketplace(input: CreatePrivateMarketplaceInput!): PrivateMarketplacePayload!
+  updatePrivateMarketplace(id: ID!, input: UpdatePrivateMarketplaceInput!): PrivateMarketplacePayload!
+  deletePrivateMarketplace(id: ID!): DeletePayload!
+  inviteBuyers(input: InviteBuyerInput!): PrivateMarketplacePayload!
+  removeBuyerFromPrivateMarketplace(privateMarketplaceId: ID!, buyerId: ID!): PrivateMarketplacePayload!
+
+  # Audience segment mutations
+  createAudienceSegment(input: CreateAudienceSegmentInput!): AudienceSegmentPayload!
+  updateAudienceSegment(id: ID!, input: UpdateAudienceSegmentInput!): AudienceSegmentPayload!
+  deleteAudienceSegment(id: ID!): DeletePayload!
+
+  # Curation package mutations
+  createCurationPackage(input: CreateCurationPackageInput!): CurationPackagePayload!
+  updateCurationPackage(id: ID!, input: UpdateCurationPackageInput!): CurationPackagePayload!
+  deleteCurationPackage(id: ID!): DeletePayload!
+  activateCurationPackage(id: ID!): CurationPackagePayload!
+
+  # Yield report mutations
+  generateYieldReport(input: YieldReportRequestInput!): YieldReportPayload!
+
+  # Ad quality mutations
+  updateAdQualitySettings(input: UpdateAdQualityInput!): PublisherPayload!
+
+  # OpenWrap mutations
+  updateOpenWrapConfig(input: UpdateOpenWrapConfigInput!): OpenWrapConfigPayload!
+
+  # Alert mutations
+  markAlertRead(id: ID!): Alert!
+  markAllAlertsRead(publisherId: ID!): Boolean!
+
+  # API key mutations
+  createApiKey(input: CreateApiKeyInput!): ApiKeyPayload!
+  revokeApiKey(id: ID!): DeletePayload!
+}
