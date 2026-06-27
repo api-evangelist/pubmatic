@@ -3,13 +3,19 @@
   "feeds": [
     {
       "source": "https://pubmatic.com/blog/feed/",
-      "error": "URLError"
+      "feed_url": "https://pubmatic.com/blog/feed/",
+      "title": "",
+      "saved": 0,
+      "method": "feed"
     },
     {
       "source": "https://pubmatic.com/news/",
-      "error": "URLError"
+      "feed_url": "https://pubmatic.com/news/feed/",
+      "title": "",
+      "saved": 1,
+      "method": "discovered"
     }
   ],
-  "post_count": 0,
-  "fetched": "2026-06-14T20:42:17Z"
+  "fetched": "2026-06-27T12:03:07Z",
+  "post_count": 11
 }
