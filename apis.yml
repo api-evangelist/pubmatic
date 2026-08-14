@@ -13,7 +13,13 @@ description: 'PubMatic is a Redwood City, California-headquartered independent t
   its programmatic surface primarily via the OpenRTB protocol, prebid integrations,
   and embedded SDKs rather than a public REST developer portal — making this profile
   a directory of PubMatic''s products, OpenWrap repos, sample apps, and supply-chain
-  endpoints rather than a tier-1 OpenAPI-backed catalog.'
+  endpoints rather than a tier-1 OpenAPI-backed catalog. Its one reachable agent-facing
+  API is the PubMatic MCP Server at https://mcp.pubmatic.com/mcp, whose specifications,
+  integration guides and packaged Agent Skills PubMatic publishes openly at
+  github.com/PubMatic/pubmatic-mcp-server even though the endpoint itself is
+  account-gated; the customer API reference at help.pubmatic.com sits behind an
+  Okta/Auth0 login, and no OpenAPI, AsyncAPI, GraphQL or A2A agent card is served on
+  any PubMatic host.'
 type: Index
 accessModel:
   pricing: unknown
@@ -50,9 +56,47 @@ tags:
 - Agentic AI
 url: https://raw.githubusercontent.com/api-evangelist/pubmatic/refs/heads/main/apis.yml
 created: '2026-05-25'
-modified: '2026-05-25'
+modified: '2026-08-13'
 specificationVersion: '0.20'
-apis: []
+apis:
+- name: PubMatic MCP Server
+  description: >-
+    PubMatic's Model Context Protocol (MCP) server — the company's public agent-facing API
+    surface for programmatic advertising. It exposes four published tools over JSON-RPC 2.0:
+    deal_management (create or clone PMP, PG, Preferred and Auction Package deals),
+    deal_troubleshooting (diagnose an underdelivering deal and return root causes),
+    inventory_discovery (turn a natural-language campaign brief into ranked supply packages
+    with forecast impressions, eCPM and a match explanation) and submit_dsp_details (fire
+    live OpenRTB 2.5 bid requests at a DSP's endpoint from selected data centers and return
+    validated test results). Access is granted per account by a PubMatic representative;
+    tools/list is auth-gated behind a Bearer/OAuth token plus a resource-id and resource-type
+    that pin the connection to one publisher, DSP, buyer or Activate advertiser.
+  humanURL: https://github.com/PubMatic/pubmatic-mcp-server
+  baseURL: https://mcp.pubmatic.com/mcp
+  tags:
+  - MCP
+  - Agentic AI
+  - Programmatic Advertising
+  - Deals
+  - Inventory Discovery
+  - DSP Onboarding
+  properties:
+  - type: MCPServer
+    url: mcp/pubmatic-mcp.yml
+  - type: Documentation
+    url: https://github.com/PubMatic/pubmatic-mcp-server/blob/main/README.md
+  - type: Authentication
+    url: authentication/pubmatic-authentication.yml
+  - type: AgentSkill
+    url: skills/_index.yml
+  - type: ErrorCatalog
+    url: errors/pubmatic-problem-types.yml
+  - type: Conventions
+    url: conventions/pubmatic-conventions.yml
+  - type: DataModel
+    url: data-model/pubmatic-data-model.yml
+  - type: SourceCode
+    url: https://github.com/PubMatic/pubmatic-mcp-server
 common:
 - type: DomainSecurity
   url: security/pubmatic-domain-security.yml
@@ -80,7 +124,7 @@ common:
   url: https://pubmatic.com/products/auction-packages/
 - type: HelpCenter
   url: https://help.pubmatic.com
-- type: GitHub
+- type: GitHubOrganization
   url: https://github.com/PubMatic
 - type: OpenWrapRepo
   url: https://github.com/PubMatic/OpenWrap
@@ -95,33 +139,72 @@ common:
 - type: OpenWrapSamplesUnity
   url: https://github.com/PubMatic/unity-openwrap-sdk-samples
 - type: MCPServer
+  url: mcp/pubmatic-mcp.yml
+- type: SourceCode
   url: https://github.com/PubMatic/pubmatic-mcp-server
 - type: SKAdNetworkApp
   url: https://github.com/PubMatic/PubMatic-SKAdNetwork-App
 - type: SupplyChain
-  url: https://pubmatic.com/legal/sellers-json/
-- type: AdsTxt
-  url: https://pubmatic.com/ads.txt
+  url: https://pubmatic.com/sellers.json
 - type: Investors
   url: https://investors.pubmatic.com
 - type: Newsroom
   url: https://pubmatic.com/news/
 - type: Blog
-  url: https://pubmatic.com/blog/
+  url: https://pubmatic.com/resources/?type=blog
+- type: BlogRSS
+  url: https://pubmatic.com/blog/feed/
 - type: Careers
   url: https://pubmatic.com/careers/
 - type: Contact
   url: https://pubmatic.com/contact-us/
-- type: Privacy
-  url: https://pubmatic.com/legal/privacy-policy/
+- type: PrivacyPolicy
+  url: https://pubmatic.com/legal/privacy/
 - type: Twitter
   url: https://twitter.com/pubmatic
 - type: LinkedIn
   url: https://www.linkedin.com/company/pubmatic
 - type: YouTube
   url: https://www.youtube.com/@PubMatic
-- url: graphql/pubmatic-graphql.md
-  type: GraphQL
+- type: Documentation
+  url: https://help.pubmatic.com/
+- type: TermsOfService
+  url: https://pubmatic.com/legal/website-terms-of-service/
+- type: DeveloperTerms
+  url: https://pubmatic.com/legal/developer-terms-use/
+- type: Login
+  url: https://apps.pubmatic.com/login/community
+- type: AgentSkill
+  url: skills/_index.yml
+- type: LLMsTxt
+  url: llms/pubmatic-llms.txt
+- type: Packages
+  url: packages/pubmatic-packages.yml
+- type: SDKs
+  url: packages/pubmatic-packages.yml
+- type: Authentication
+  url: authentication/pubmatic-authentication.yml
+- type: Conventions
+  url: conventions/pubmatic-conventions.yml
+- type: ErrorCatalog
+  url: errors/pubmatic-problem-types.yml
+- type: Conformance
+  url: conformance/pubmatic-conformance.yml
+- type: Lifecycle
+  url: lifecycle/pubmatic-lifecycle.yml
+- type: ChangeLog
+  url: changelog/pubmatic-changelog.yml
+- type: Plans
+  url: plans/pubmatic-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/pubmatic-rate-limits.yml
+- type: DataModel
+  url: data-model/pubmatic-data-model.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
+x-enrichment:
+  date: '2026-08-13'
+  status: enriched
+  artifacts_added: 16
+  pass: local-v1
