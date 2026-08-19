@@ -1,0 +1,89 @@
+generated: '2026-08-13'
+method: probed
+source: >-
+  live probes of pubmatic.com, help.pubmatic.com, status.pubmatic.com,
+  pubmatic.statuspage.io, pubmatic.instatus.com, plus github.com/PubMatic release tags
+note: >-
+  NO StatusPage AND NO Deprecation POINTER IS EMITTED FROM THIS FILE. Both were probed for
+  and both are genuinely absent. Two 200s were caught and rejected as vendor marketing
+  catch-alls rather than PubMatic status pages — see status_page.rejected_candidates below.
+  This artifact records the absence so the gap is legible instead of unexamined.
+versioning:
+  scheme: none-published
+  current: null
+  docs: null
+  evidence: >-
+    The MCP endpoint is unversioned in its path (https://mcp.pubmatic.com/mcp); PubMatic's
+    Deal Management guide separately documents a https://mcp.pubmatic.com/v1 base, so the
+    two published forms disagree. No versioning policy page is public. SDK lines carry
+    ordinary semver (OpenWrap iOS 5.2.0, Flutter 3.0.1, React Native 2.0.0, OpenWrap wrapper
+    v30.x).
+deprecation:
+  policy_url: null
+  sunset_header: unknown
+  policy_published: false
+  evidence: >-
+    No deprecation or sunset policy found on pubmatic.com or in the public MCP repository.
+    help.pubmatic.com/publisher/docs/release-notes exists but 302s into the customer login
+    chain, so any deprecation notices PubMatic does publish are visible only to authenticated
+    customers.
+sla:
+  url: null
+  uptime_target: null
+  evidence: >-
+    Commercial terms live in the Publisher and Demand Partner Master Services Agreements at
+    pubmatic.com/legal/, which are contract documents rather than a published uptime target.
+    No numeric availability commitment is public.
+status_page: null
+status_page_evidence:
+  probed:
+  - {url: 'https://status.pubmatic.com/', result: DNS does not resolve}
+  - {url: 'https://pubmatic.com/status/', http_status: 404}
+  rejected_candidates:
+  - url: https://pubmatic.statuspage.io/
+    http_status: 200
+    reason: >-
+      FALSE POSITIVE. Body is Atlassian's Statuspage product marketing page
+      ("Real-Time Incident Communication with Statuspage | Atlassian"). Control probe of
+      zzzznotarealcompany999.statuspage.io returns the byte-identical page, so this 200 is a
+      wildcard catch-all, not a PubMatic status page.
+  - url: https://pubmatic.instatus.com/
+    http_status: 200
+    reason: >-
+      FALSE POSITIVE. Body is Instatus marketing ("Instatus - Get ready for downtime"), the
+      vendor's wildcard response for an unclaimed subdomain.
+  customer_only_surface:
+    url: https://community.pubmatic.com/display/AN/Analytics+Status
+    http_status: 200
+    reason: >-
+      NOT A STATUS PAGE. community.pubmatic.com now resolves to the help.pubmatic.com SPA and
+      returns the byte-identical 532,437-byte shell for every path, including this one. A
+      legacy Confluence "Analytics Status" page is referenced in third-party writeups but is
+      no longer served at that address.
+release_channels:
+- name: PubMatic MCP Server specifications
+  url: https://github.com/PubMatic/pubmatic-mcp-server
+  kind: public git repository
+  latest_activity: '2026-07-30'
+  note: The only public, dated release surface PubMatic operates for its programmatic APIs.
+- name: OpenWrap SDK releases
+  url: https://github.com/PubMatic
+  kind: git tags + CocoaPods/pub.dev/npm registry releases
+  detail: packages/pubmatic-packages.yml
+- name: Release notes (gated)
+  url: https://help.pubmatic.com/publisher/docs/release-notes
+  http_status: 302
+  note: Redirects to the ReadMe -> Auth0 -> Okta -> apps.pubmatic.com customer login.
+deprecated_operations: []
+decay_signals:
+- >-
+  react-native-openwrap-sdk last published 2024-02-22 (npm) with no repository push since,
+  while iOS shipped 2026-07-20 and Flutter 2026-07-29 — a two-year-plus gap on one platform
+  of the same SDK family.
+- >-
+  PubMatic-SKAdNetwork-App last pushed 2020-10-26 and unity-openwrap-sdk-samples 2025-04-24,
+  both still linked as current from apis.yml.
+- >-
+  The OpenWrap wrapper's newest tags are v30.4.0_NIGHTLY and v30.3.0_EXPERIMENTAL — the head
+  of the public tag list is a pre-release line, so there is no clearly marked stable release
+  pointer.

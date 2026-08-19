@@ -1,0 +1,102 @@
+generated: '2026-08-13'
+method: searched
+source: https://github.com/PubMatic/pubmatic-mcp-server
+docs: https://help.pubmatic.com/activate/reference/get-started-with-pubmatic-apis
+docs_status: gated
+note: >-
+  DERIVED FROM NO OPENAPI — PubMatic publishes no OpenAPI/Swagger document anywhere this
+  pipeline could reach, so there are no securitySchemes to aggregate. Everything below is
+  transcribed from PubMatic's own published MCP integration guides and client setup
+  documents in github.com/PubMatic/pubmatic-mcp-server, plus one directly observed response
+  header. The canonical auth reference (help.pubmatic.com/activate/reference/
+  get-started-with-pubmatic-apis) is real but 302s into the ReadMe -> Auth0 -> Okta ->
+  apps.pubmatic.com customer login chain, so its contents could not be read.
+summary:
+  types: [http, apiKey, oauth2]
+  http_schemes: [bearer]
+  api_key_in: [header]
+  oauth2_flows: [authorizationCode]
+  multi_tenant: true
+  tenant_selector: resource-id + resource-type
+schemes:
+- name: PubToken
+  type: http
+  scheme: bearer
+  in: header
+  parameter: Authorization
+  description: >-
+    PubMatic-issued Bearer token ("PubToken") generated through the PubMatic API or UI. Used
+    by the Claude Desktop MCP extension and by direct MCP clients.
+  credential_source: https://help.pubmatic.com/activate/reference/get-started-with-pubmatic-apis
+  sources:
+  - https://github.com/PubMatic/pubmatic-mcp-server/blob/main/Claude_Desktop_Extension/MCP_Claude_Setup_Readme_External.md
+  - https://github.com/PubMatic/pubmatic-mcp-server/blob/main/DSP%20Onboarding/DSP_onboarding_integration_guide.md
+  observed:
+    url: https://mcp.pubmatic.com/mcp
+    http_status: 401
+    www_authenticate: Bearer error="invalid_token", error_description="The access token is invalid or expired"
+    fetched: '2026-08-13'
+- name: X-API-Key
+  type: apiKey
+  in: header
+  parameter: X-API-Key
+  description: >-
+    API key authentication for all requests to the MCP Server. Obtained from a PubMatic
+    representative; there is no self-service issuance.
+  sources:
+  - https://github.com/PubMatic/pubmatic-mcp-server/blob/main/Deal%20Management/README.md
+- name: PubMatic OAuth (ChatGPT connector)
+  type: oauth2
+  flows:
+  - flow: authorizationCode
+    login_endpoint_pattern: https://mcp.pubmatic.com/login/{publisher|activate}
+    description: >-
+      ChatGPT connectors select "OAuth" as the authentication type; the user is redirected to
+      a PubMatic login page chosen by resource-type — /login/publisher for PUBLISHER (1),
+      /login/activate for ACTIVATE ADVERTISER (14) — and returns an installed connector.
+    scopes: []
+    scopes_note: >-
+      No scope vocabulary is published. Authorization is coarse: the user account must have
+      "API access enabled", and the connector is bound to one resource. No scopes/ artifact
+      is emitted because there is nothing real to record.
+  discovery:
+    oauth_authorization_server: 404
+    oauth_protected_resource: 404
+    note: >-
+      RFC 8414 / RFC 9728 discovery documents are NOT served on mcp.pubmatic.com, so an MCP
+      client cannot resolve the authorization server programmatically from the 401 challenge.
+  sources:
+  - https://github.com/PubMatic/pubmatic-mcp-server/blob/main/ChatGPT_Extension/MCP_ChatGPT_Setup_Readme_External.md
+tenancy:
+  description: >-
+    Every authenticated call is scoped to exactly one PubMatic resource. The pair is supplied
+    as query parameters on the MCP URL for ChatGPT (which cannot send custom headers) and as
+    extension configuration fields for Claude Desktop.
+  parameters:
+  - name: resource-id
+    required: true
+    issued_by: PubMatic Solutions Engineer
+  - name: resource-type
+    required: true
+    values: [PUBLISHER, DSP, BUYER, ACTIVATE ADVERTISER]
+    numeric_ids: {PUBLISHER: 1, ACTIVATE ADVERTISER: 14}
+  constraint: >-
+    resource-id and resource-type are fixed at connector-creation time and cannot be changed;
+    a second account requires a second connector. Sessions must be fully logged out before
+    creating a connector for a different resource type or authentication misroutes.
+  example_url: https://mcp.pubmatic.com/mcp?resource-id=<resource-id>&resource-type=PUBLISHER
+legacy_api_surface:
+  host: https://api.pubmatic.com
+  observed_status: 404 at root, 500 on unknown paths
+  gateway: Apigee
+  note: >-
+    api.pubmatic.com is live and fronts a SOAP-era publisher web service — unknown paths
+    return a soap:Fault naming
+    http://v1_0.webservices.publisher.core.pubmatic.com/ with errorCode ClassificationFailure
+    and errorMessage "This is an invalid api." No OpenAPI, Swagger UI, /docs, /redoc or
+    GraphQL endpoint is exposed. Its authentication model is not publicly documented.
+x-evidence:
+- {url: 'https://mcp.pubmatic.com/mcp', http_status: 401, fetched: '2026-08-13'}
+- {url: 'https://help.pubmatic.com/activate/reference/get-started-with-pubmatic-apis', http_status: 302, fetched: '2026-08-13'}
+- {url: 'https://api.pubmatic.com/', http_status: 404, fetched: '2026-08-13'}
+- {url: 'https://api.pubmatic.com/openapi.json', http_status: 500, fetched: '2026-08-13'}

@@ -1,0 +1,90 @@
+generated: '2026-08-13'
+method: derived
+source: >-
+  mcp/pubmatic-mcp.yml, derived from the error shapes PubMatic publishes in
+  github.com/PubMatic/pubmatic-mcp-server, plus one directly observed live response
+format: jsonrpc-2.0
+note: >-
+  NOT RFC 9457. PubMatic publishes no REST error catalogue and no application/problem+json
+  envelope — there is no OpenAPI to derive 4xx/5xx responses from. What follows is the
+  JSON-RPC 2.0 error envelope used by the PubMatic MCP Server, transcribed from PubMatic's
+  own integration guides, plus the transport-level 401 this pipeline observed directly. The
+  gated API reference at help.pubmatic.com may document a larger catalogue that could not be
+  read.
+envelope:
+  transport: JSON-RPC 2.0
+  shape:
+    jsonrpc: '2.0'
+    id: <request id>
+    error:
+      code: <integer>
+      message: <string>
+      data:
+        details: <string>
+  success_shape:
+    result:
+      content: [{type: text, text: '...'}]
+      structuredContent: <tool-specific object, optional>
+problems:
+- code: -32002
+  transport_status: 401
+  title: Invalid or expired access token
+  detail: The access token is invalid or expired
+  www_authenticate: Bearer error="invalid_token"
+  remediation: >-
+    Regenerate the PubToken/Bearer token from the PubMatic API or UI, or re-run the OAuth
+    connector authorization. Confirm the account has API access enabled.
+  method: probed
+  observed:
+    url: https://mcp.pubmatic.com/mcp
+    fetched: '2026-08-13'
+  source_operation: mcp/pubmatic-mcp.yml#tools/list
+- code: 400
+  title: Invalid deal parameters
+  detail_example: Priority P4 is not valid for PMP deals. Valid priorities are P11-P15.
+  remediation: >-
+    Supply a priority band valid for the deal type — PMP P11-P15, PG P5-P7, Preferred P8-P10 —
+    and the required fields for that type (PG additionally requires pacing and guaranteed
+    impressions).
+  source_operation: deal_management
+  source: https://github.com/PubMatic/pubmatic-mcp-server/blob/main/Deal%20Management/deal_create_copy_integration_guide.md
+documented_failure_classes:
+- id: missing_required_fields
+  surface: deal_management
+  behaviour: >-
+    The agent re-prompts conversationally for the missing field rather than returning an
+    error object.
+  remediation: Provide all required fields for the deal type.
+- id: authentication_error
+  surface: all tools
+  behaviour: Request rejected.
+  remediation: Verify the API key/Bearer token is configured and has the necessary permissions.
+- id: invalid_deal_type_or_parameters
+  surface: deal_management
+  remediation: 'Use a valid deal type (PMP, PG, Preferred, Auction Packages) and in-range parameters.'
+- id: deal_not_found
+  surface: deal_management (copy/clone)
+  remediation: Verify the source deal ID exists before cloning.
+- id: configuration_error
+  surface: submit_dsp_details
+  status_field_value: configuration_error
+  behaviour: Returned when the DSP endpoint is invalid or required parameters are missing.
+  remediation: Supply a publicly reachable dsp_bid_endpoint_url that accepts OpenRTB 2.5 POSTs.
+- id: blocked
+  surface: submit_dsp_details
+  status_field_value: blocked
+  behaviour: >-
+    Returned when the DSP endpoint is unreachable, times out, or fails OpenRTB validation
+    consistently.
+  remediation: >-
+    Check firewall/allow-listing for PubMatic data-center egress, endpoint timeouts, and
+    OpenRTB 2.5 response conformance.
+- id: error
+  surface: submit_dsp_details
+  status_field_value: error
+  behaviour: Integration testing failure or system error; a user-presentable message is returned and the exception logged.
+gaps:
+- No published numeric error-code registry.
+- No RFC 9457 problem+json media type.
+- No documented retry-after or backoff semantics.
+- 'No request/correlation id header documented for support escalation (the MCP params carry an optional context.conversation_id only).'

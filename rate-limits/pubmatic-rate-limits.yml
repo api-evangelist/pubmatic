@@ -1,0 +1,48 @@
+generated: '2026-08-13'
+method: searched
+source: >-
+  github.com/PubMatic/pubmatic-mcp-server integration guides plus live response-header
+  inspection of mcp.pubmatic.com and api.pubmatic.com
+limit_count: 0
+headers_published: []
+status_code_on_exhaustion: null
+retry_after: undocumented
+note: >-
+  AN HONEST ZERO. PubMatic documents no rate limits and returns no rate-limit headers on any
+  surface this pass could reach anonymously. All four MCP integration guides
+  (Deal Management, Deal Troubleshooting, Inventory Discovery, DSP Onboarding) cover
+  authentication, schemas, errors and best practices and say nothing about throughput,
+  quotas, burst, backoff or 429 handling — the DSP Onboarding tool even takes a caller-supplied
+  `num_requests` parameter that drives live OpenRTB traffic, with no documented ceiling.
+  A live POST to https://mcp.pubmatic.com/mcp returned 401 with no X-RateLimit-*, RateLimit-*
+  or Retry-After header present. api.pubmatic.com (Apigee) likewise returned none on its
+  error responses. The gated API reference at
+  help.pubmatic.com/activate/reference/get-started-with-pubmatic-apis may document limits
+  that could not be read.
+limits: []
+observed:
+- host: mcp.pubmatic.com
+  url: https://mcp.pubmatic.com/mcp
+  method: POST tools/list
+  http_status: 401
+  rate_limit_headers: none
+  fetched: '2026-08-13'
+- host: api.pubmatic.com
+  url: https://api.pubmatic.com/
+  http_status: 404
+  rate_limit_headers: none
+  fetched: '2026-08-13'
+not_an_api_limit:
+- host: help.pubmatic.com
+  headers_seen: ['x-ratelimit-limit: 100', 'x-ratelimit-remaining: 99', 'x-ratelimit-reset: <epoch>']
+  http_status: 302
+  reason: >-
+    RECORDED SO IT IS NOT MISREAD AS AN API LIMIT. These headers come from the ReadMe.io
+    documentation platform that hosts help.pubmatic.com, throttling requests to the docs site
+    itself. They describe PubMatic's docs vendor, not PubMatic's API, and are deliberately
+    NOT counted in limit_count.
+gaps:
+- No published per-key, per-account or per-endpoint quota.
+- No RateLimit-* or X-RateLimit-* headers returned by the MCP server.
+- No documented 429 behaviour or Retry-After contract for an agent to back off against.
+- 'submit_dsp_details accepts num_requests with no documented maximum.'

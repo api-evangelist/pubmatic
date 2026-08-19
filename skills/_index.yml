@@ -1,0 +1,47 @@
+generated: '2026-08-13'
+method: searched
+source: https://github.com/PubMatic/pubmatic-mcp-server/tree/main/DSP%20Onboarding
+note: >-
+  PubMatic publishes its own packaged Agent Skills as .skill bundles (ZIP archives
+  containing a SKILL.md with YAML frontmatter) in the official PubMatic/pubmatic-mcp-server
+  repository. These were downloaded and the SKILL.md extracted VERBATIM — nothing here is
+  authored by API Evangelist. They drive the PubMatic MCP Server (https://mcp.pubmatic.com/mcp)
+  DSP onboarding workflow described in DSP Onboarding/DSP_onboarding_integration_guide.md.
+skills:
+- file: pubmatic-dsp-launchpad-intake.md
+  name: dsp-launchpad-intake
+  description: >-
+    DSP Launchpad intake form — collects all technical onboarding details from a
+    demand-side platform (DSP): RTB/bidder endpoint, data-center preferences,
+    platform/ad-format support and timeout configuration, then triggers the
+    MCP backend integration test.
+  api: mcp/pubmatic-mcp.yml
+  operations:
+  - submit_dsp_details
+  source: https://github.com/PubMatic/pubmatic-mcp-server/blob/main/DSP%20Onboarding/dsp-launchpad-intake.skill
+  bundle: dsp-launchpad-intake.skill
+  method: searched
+- file: pubmatic-dsp-live-setup.md
+  name: dsp-live-setup
+  description: >-
+    Collects live setup details from a DSP after successful integration testing —
+    campaign configuration for the live environment. Runs immediately after
+    dsp-launchpad-intake completes with a passing success rate.
+  api: mcp/pubmatic-mcp.yml
+  operations:
+  - submit_dsp_details
+  source: https://github.com/PubMatic/pubmatic-mcp-server/blob/main/DSP%20Onboarding/dsp-live-setup.skill
+  bundle: dsp-live-setup.skill
+  method: searched
+x-evidence:
+- url: https://api.github.com/repos/PubMatic/pubmatic-mcp-server/git/trees/HEAD?recursive=1
+  http_status: 200
+  fetched: '2026-08-13'
+- url: https://raw.githubusercontent.com/PubMatic/pubmatic-mcp-server/main/DSP%20Onboarding/dsp-launchpad-intake.skill
+  http_status: 200
+  fetched: '2026-08-13'
+  content_type: application/zip
+- url: https://raw.githubusercontent.com/PubMatic/pubmatic-mcp-server/main/DSP%20Onboarding/dsp-live-setup.skill
+  http_status: 200
+  fetched: '2026-08-13'
+  content_type: application/zip

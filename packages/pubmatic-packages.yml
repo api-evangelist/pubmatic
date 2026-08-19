@@ -1,0 +1,163 @@
+generated: '2026-08-13'
+method: searched
+source: >-
+  CocoaPods trunk API, pub.dev API, registry.npmjs.org, Maven Central search, and the
+  PubMatic GitHub organization (github.com/PubMatic) tag lists
+note: >-
+  PubMatic ships no server-side REST SDKs — its client libraries are all OpenWrap
+  header-bidding SDKs for app and web publishers. The Android OpenWrap SDK is NOT on Maven
+  Central (the only "pubmatic" artifacts there are third-party mediation adapters published
+  by AppLovin and Yodo1, recorded below as official: false), and PubMatic's own Maven
+  repository host (repo.pubmatic.com) returns 404 anonymously, so its version cannot be read
+  from a registry metadata endpoint.
+packages:
+- language: swift
+  platform: ios
+  registry: cocoapods
+  name: OpenWrapSDK
+  url: https://cocoapods.org/pods/OpenWrapSDK
+  install: pod 'OpenWrapSDK'
+  official: true
+  version: 5.2.0
+  published: '2026-07-20'
+  source_registry: https://trunk.cocoapods.org/api/v1/pods/OpenWrapSDK
+- language: swift
+  platform: ios
+  registry: cocoapods
+  name: OpenWrapHandlerDFP
+  url: https://cocoapods.org/pods/OpenWrapHandlerDFP
+  install: pod 'OpenWrapHandlerDFP'
+  official: true
+  version: 6.0.0
+  published: '2025-10-16'
+  source_registry: https://trunk.cocoapods.org/api/v1/pods/OpenWrapHandlerDFP
+  note: Google Ad Manager (DFP) event handler for the OpenWrap iOS SDK.
+- language: swift
+  platform: ios
+  registry: swift-package-manager
+  name: OpenWrapSDK-Swift-Package
+  url: https://github.com/PubMatic/OpenWrapSDK-Swift-Package
+  install: '.package(url: "https://github.com/PubMatic/OpenWrapSDK-Swift-Package", from: "5.1.0")'
+  official: true
+  version: v5.1.0
+  published: null
+  note: >-
+    Swift Package Manager has no central metadata endpoint; version read from the repository
+    git tag list (latest tag v5.1.0). Publish date not exposed by the tags API, recorded null
+    rather than guessed. Trails the CocoaPods build (5.2.0) by one minor version.
+- language: swift
+  platform: ios
+  registry: swift-package-manager
+  name: OpenWrapHandlerDFP-Swift-Package
+  url: https://github.com/PubMatic/OpenWrapHandlerDFP-Swift-Package
+  install: '.package(url: "https://github.com/PubMatic/OpenWrapHandlerDFP-Swift-Package", from: "6.0.0")'
+  official: true
+  version: 6.0.0
+  published: null
+  note: Version from git tags; SPM exposes no registry metadata endpoint.
+- language: dart
+  platform: flutter
+  registry: pub.dev
+  name: flutter_openwrap_sdk
+  url: https://pub.dev/packages/flutter_openwrap_sdk
+  install: flutter pub add flutter_openwrap_sdk
+  official: true
+  version: 3.0.1
+  published: '2026-07-29'
+  source_registry: https://pub.dev/api/packages/flutter_openwrap_sdk
+  repo: https://github.com/PubMatic/flutter-openwrap-sdk
+  docs: https://help.pubmatic.com/openwrap/docs/about-openwrap-sdk-flutter-plugin
+- language: dart
+  platform: flutter
+  registry: github
+  name: flutter-openwrap-event-handler-gam
+  url: https://github.com/PubMatic/flutter-openwrap-event-handler-gam
+  official: true
+  version: v4.1.0
+  published: null
+  note: >-
+    Google Ad Manager event handler for the Flutter OpenWrap plugin. Distributed from the
+    repository; version read from the latest git tag, no registry metadata endpoint to query.
+- language: typescript
+  platform: react-native
+  registry: npm
+  name: react-native-openwrap-sdk
+  url: https://www.npmjs.com/package/react-native-openwrap-sdk
+  install: npm install react-native-openwrap-sdk
+  official: true
+  version: 2.0.0
+  published: '2024-02-22'
+  source_registry: https://registry.npmjs.org/react-native-openwrap-sdk
+  repo: https://github.com/PubMatic/react-native-openwrap-sdk
+  note: >-
+    DECAY SIGNAL — last published 2024-02-22, more than two years stale, while the iOS
+    (5.2.0, 2026-07-20) and Flutter (3.0.1, 2026-07-29) SDKs shipped within the last month.
+    The React Native repo's last push is also 2024-02-22.
+- language: kotlin
+  platform: android
+  registry: pubmatic-maven
+  name: OpenWrap SDK (Android)
+  url: https://help.pubmatic.com/openwrap/
+  official: true
+  version: null
+  published: null
+  note: >-
+    CHECKED, NOTHING TO RECORD. The Android OpenWrap SDK is not published to Maven Central
+    (search.maven.org returns only third-party adapters) and PubMatic's own artifact host
+    repo.pubmatic.com returns HTTP 404 anonymously. The install coordinates live in the
+    OpenWrap docs at help.pubmatic.com, which 302s to a customer login. Version therefore
+    unreadable without an account — recorded null rather than guessed. Sample integrations:
+    https://github.com/PubMatic/android-openwrap-sdk-samples
+- language: javascript
+  platform: web
+  registry: github
+  name: OpenWrap
+  url: https://github.com/PubMatic/OpenWrap
+  official: true
+  version: v30.4.0_NIGHTLY
+  published: null
+  note: >-
+    Open-source Prebid.js-based header-bidding wrapper, built and served per publisher rather
+    than distributed from a package registry. Latest git tag is v30.4.0_NIGHTLY; the
+    preceding tags are v30.3.0_EXPERIMENTAL and v30.2.0_EXPERIMENTAL, so the head of the tag
+    list is a pre-release line. A consumer takes whatever build their PubMatic-hosted wrapper
+    URL serves, which is unpinned — that is the finding.
+- language: csharp
+  platform: unity
+  registry: github
+  name: unity-openwrap-sdk-samples
+  url: https://github.com/PubMatic/unity-openwrap-sdk-samples
+  official: true
+  version: null
+  published: null
+  note: >-
+    Sample applications only, not a distributable package; no registry entry and no release
+    tags. Repository last pushed 2025-04-24.
+- language: java
+  platform: android
+  registry: maven
+  name: com.applovin.mediation:pubmatic-adapter
+  url: https://search.maven.org/artifact/com.applovin.mediation/pubmatic-adapter
+  official: false
+  version: 4.7.0.0
+  published: '2025-06-12'
+  note: THIRD-PARTY — published by AppLovin, not PubMatic. Listed for completeness only.
+- language: java
+  platform: android
+  registry: maven
+  name: com.yodo1.mas.mediation:pubmatic
+  url: https://search.maven.org/artifact/com.yodo1.mas.mediation/pubmatic
+  official: false
+  version: 4.15.0
+  published: '2025-04-09'
+  note: THIRD-PARTY — published by Yodo1, not PubMatic. Listed for completeness only.
+summary:
+  official_count: 9
+  third_party_count: 2
+  registries_hit: [cocoapods, pub.dev, npm]
+  registries_missed: [maven-central, pypi, nuget, rubygems, packagist, crates.io, pkg.go.dev]
+  server_side_sdks: 0
+  note: >-
+    No server-side SDK in any language for PubMatic's platform APIs — every first-party
+    library is a client-side ad-serving SDK. Consistent with the API reference being gated
+    behind a customer login.

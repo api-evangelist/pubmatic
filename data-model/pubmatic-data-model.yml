@@ -1,0 +1,133 @@
+generated: '2026-08-13'
+method: derived
+source: >-
+  mcp/pubmatic-mcp.yml — derived from the structuredContent response shapes PubMatic
+  publishes in github.com/PubMatic/pubmatic-mcp-server
+note: >-
+  DERIVED FROM MCP RESPONSE PAYLOADS, NOT FROM AN OPENAPI. PubMatic publishes no OpenAPI, so
+  there are no components.schemas or $ref edges to walk. Every entity and field below is
+  read off a concrete response example in PubMatic's own integration guides. Fields not
+  present in a published example are not invented; cardinalities marked `inferred` come from
+  the shape of the example (an array implies has_many) rather than from a declared schema.
+entities:
+- name: Deal
+  key: deal_info
+  id_field: id
+  id_examples: [PMP12345, PMP12346, XYZ123]
+  id_convention: >-
+    Deal ids observed in examples are prefixed by deal type (PMP…), though PubMatic does not
+    document this as a guaranteed convention.
+  fields:
+  - {name: id, type: string}
+  - {name: name, type: string}
+  - {name: advertiser, type: string}
+  - {name: start_date, type: string, format: date}
+  - {name: end_date, type: string, format: date}
+  - {name: deal_type, type: string, enum: [PMP, PG, Preferred, Auction Package]}
+  - {name: cpm, type: number}
+  - {name: priority, type: string, note: 'PMP P11-P15, PG P5-P7, Preferred P8-P10'}
+  - {name: targeting, type: object}
+  - {name: status, type: string, observed: [created]}
+  - {name: cloned_from, type: string, note: present only on a cloned deal}
+  source: https://github.com/PubMatic/pubmatic-mcp-server/blob/main/Deal%20Management/deal_create_copy_integration_guide.md
+- name: Targeting
+  embedded_in: Deal
+  fields:
+  - {name: geo, type: string, observed: US}
+  - {name: device, type: string, observed: Desktop}
+- name: DealPerformance
+  key: performance_summary
+  fields:
+  - {name: status, type: string, observed: [underperforming]}
+  - {name: primary_issues, type: array, items: string}
+  - {name: health_score, type: number, observed: 65}
+  source: https://github.com/PubMatic/pubmatic-mcp-server/blob/main/Deal%20Management/deal_troubleshooting_integration_guide.md
+- name: RootCause
+  key: root_causes
+  cardinality: array
+  note: >-
+    Returned by deal_troubleshooting alongside deal_info and performance_summary. Individual
+    field names inside each root-cause object are not fully enumerated in the published
+    excerpt and are therefore not listed rather than guessed.
+- name: SupplyPackage
+  key: packages
+  id_field: id
+  id_examples: [3084, 3086, 202]
+  fields:
+  - {name: id, type: integer}
+  - {name: name, type: string}
+  - {name: description, type: string}
+  - {name: platforms, type: array, items: 'Platform {id, name}'}
+  - {name: adFormats, type: array, items: 'AdFormat {id, name}'}
+  - {name: impressions, type: integer, note: forecast impressions}
+  - {name: ecpm, type: number}
+  - {name: createdAt, type: string, format: date-time}
+  - {name: similarity, type: number, range: 0-1}
+  - {name: matchType, type: string, observed: [primary_match]}
+  - {name: matchExplanation, type: string, note: natural-language rationale for the match}
+  source: https://github.com/PubMatic/pubmatic-mcp-server/blob/main/Inventory%20Discovery/inventory_discovery_integration_guide.md
+- name: Platform
+  fields:
+  - {name: id, type: integer, observed: 7}
+  - {name: name, type: string, observed: CTV}
+- name: AdFormat
+  fields:
+  - {name: id, type: integer, observed: 13}
+  - {name: name, type: string, observed: Video}
+- name: DiscoveryQuery
+  key: metaData
+  fields:
+  - {name: startIndex, type: integer}
+  - {name: endIndex, type: integer}
+  - {name: brief, type: string}
+  - {name: filters, type: object, note: the filters the agent actually resolved from the brief}
+- name: DiscoveryFilters
+  embedded_in: DiscoveryQuery
+  fields:
+  - {name: similarity, type: number, range: 0-1}
+  - {name: content.languages, type: array, items: string}
+  - {name: content.genres, type: array, items: string}
+  - {name: iabCategories, type: array, items: string, observed: [IAB17]}
+  - {name: adFormats, type: array, items: string}
+  - {name: platforms, type: array, items: string}
+  - {name: delivery_type, type: string, observed_values: [guaranteed, non_guaranteed]}
+  - {name: format_types, type: array, items: string}
+  - {name: standard_formats_only, type: boolean}
+- name: DSPIntegration
+  fields:
+  - {name: dsp_company_name, type: string}
+  - {name: contact_email, type: string}
+  - {name: pubmatic_dsp_id, type: string}
+  - {name: dsp_bid_endpoint_url, type: string, format: uri}
+  - {name: campaign_platforms, type: array}
+  - {name: campaign_ad_formats, type: array}
+  - {name: infrastructure_data_centers, type: array}
+  - {name: num_requests, type: integer}
+  - {name: custom_samples, type: object, note: caller-supplied OpenRTB JSON payloads per ad format}
+  source: https://github.com/PubMatic/pubmatic-mcp-server/blob/main/DSP%20Onboarding/DSP_onboarding_integration_guide.md
+- name: DSPTestResult
+  fields:
+  - {name: status, type: string, enum: [success, blocked, error, configuration_error]}
+  - {name: success_rate, type: number}
+  - {name: successful_requests, type: integer}
+  - {name: total_requests, type: integer}
+  - {name: html_results, type: string, note: server-rendered HTML dashboard for client display}
+relationships:
+- {from: Deal, to: Targeting, kind: has_one, via: targeting, confidence: high}
+- {from: Deal, to: Deal, kind: belongs_to, via: cloned_from, confidence: high, note: self-reference created by deal cloning}
+- {from: DealPerformance, to: Deal, kind: belongs_to, via: deal_info.id, confidence: high}
+- {from: DealPerformance, to: RootCause, kind: has_many, via: root_causes, confidence: high}
+- {from: SupplyPackage, to: Platform, kind: has_many, via: platforms, confidence: high}
+- {from: SupplyPackage, to: AdFormat, kind: has_many, via: adFormats, confidence: high}
+- {from: DiscoveryQuery, to: SupplyPackage, kind: has_many, via: packages, confidence: high}
+- {from: DiscoveryQuery, to: DiscoveryFilters, kind: has_one, via: filters, confidence: high}
+- {from: DSPIntegration, to: DSPTestResult, kind: has_one, via: submit_dsp_details response, confidence: medium, note: inferred from the single-call tool contract, not a declared foreign key}
+- {from: SupplyPackage, to: Deal, kind: related, via: none, confidence: low, note: 'PubMatic states inventory_discovery will gain "activation handoffs to Deal Management"; no id linkage is published today, recorded as a stated roadmap rather than an existing edge.'}
+coverage:
+  entities: 12
+  relationships: 10
+  derived_from: 4 published MCP tool response examples
+  gaps:
+  - No OpenAPI, so no authoritative schema, no required/optional flags and no type guarantees.
+  - RootCause object fields not enumerated in the published excerpt.
+  - No published entity for advertiser, publisher, ad slot or inventory beyond what appears inline on a deal or package.

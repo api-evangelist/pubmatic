@@ -1,0 +1,209 @@
+generated: '2026-08-13'
+method: searched
+status: published
+source: https://github.com/PubMatic/pubmatic-mcp-server
+docs:
+- https://github.com/PubMatic/pubmatic-mcp-server/blob/main/README.md
+- https://github.com/PubMatic/pubmatic-mcp-server/blob/main/Deal%20Management/README.md
+- https://github.com/PubMatic/pubmatic-mcp-server/blob/main/Inventory%20Discovery/README.md
+- https://github.com/PubMatic/pubmatic-mcp-server/blob/main/DSP%20Onboarding/README.md
+- https://github.com/PubMatic/pubmatic-mcp-server/blob/main/ChatGPT_Extension/MCP_ChatGPT_Setup_Readme_External.md
+- https://github.com/PubMatic/pubmatic-mcp-server/blob/main/Claude_Desktop_Extension/MCP_Claude_Setup_Readme_External.md
+
+deployment:
+  mode: both
+  endpoint: https://mcp.pubmatic.com/mcp
+  install: >-
+    Download and double-click PubMatic_Claude_MCP_extension_0.1.2.mcpb (or
+    PubMatic_Claude_MCP_extension_0.1.2_win32.mcpb) from
+    github.com/PubMatic/pubmatic-mcp-server/tree/main/Claude_Desktop_Extension to install
+    the PubMatic MCP Server extension into Claude Desktop, then supply Bearer Token,
+    Resource ID and Resource Type.
+  package: https://github.com/PubMatic/pubmatic-mcp-server/tree/main/Claude_Desktop_Extension
+  auth: oauth
+  verified: probed
+  note: >-
+    REMOTE verified by direct probe on 2026-08-13 — POST https://mcp.pubmatic.com/mcp with
+    {"jsonrpc":"2.0","id":1,"method":"tools/list"} returned HTTP 401,
+    WWW-Authenticate: Bearer error="invalid_token", body
+    {"jsonrpc":"2.0","error":{"code":-32002,"message":"Invalid or expired access token"}} —
+    i.e. a live MCP endpoint whose tools/list is auth-gated, not a 404 or an HTML shell.
+    ChatGPT connects to this URL directly with OAuth and carries account scoping as query
+    parameters: https://mcp.pubmatic.com/mcp?resource-id=<resource-id>&resource-type=PUBLISHER
+    (also ACTIVATE%20ADVERTISER). The LOCAL side is a Claude Desktop .mcpb extension bundle
+    that wraps the same server with a Bearer token — a distinct distribution, hence mode:
+    both. PubMatic's Deal Management guide additionally documents a base URL of
+    https://mcp.pubmatic.com/v1 with tool endpoints under /v1/tools; that path was not
+    independently probed and the /mcp endpoint above is the one this pipeline verified.
+
+server:
+  name: PubMatic MCP Server
+  transport: http
+  url: https://mcp.pubmatic.com/mcp
+  alternate_base_url: https://mcp.pubmatic.com/v1
+  protocol: MCP (Model Context Protocol) 2025-06-18, JSON-RPC 2.0 with structured content
+  spec_reference: https://modelcontextprotocol.io/specification/2025-06-18/server/tools#structured-content
+  methods:
+  - tools/list
+  - tools/call
+
+authentication:
+  models:
+  - kind: bearer
+    header: Authorization
+    credential: PubToken (Bearer Token) generated from the PubMatic API/UI
+    docs: https://help.pubmatic.com/activate/reference/get-started-with-pubmatic-apis
+    note: docs URL is real but gated — it 302s to the PubMatic customer login
+  - kind: api-key
+    header: X-API-Key
+    credential: API key obtained from a PubMatic representative
+    source: https://github.com/PubMatic/pubmatic-mcp-server/blob/main/Deal%20Management/README.md
+  - kind: oauth
+    flow: authorization_code (via ChatGPT connector)
+    note: >-
+      Login page is selected by resource-type — /login/publisher for PUBLISHER (1),
+      /login/activate for ACTIVATE ADVERTISER (14). The account must have API access enabled.
+  scoping:
+    parameters:
+    - name: resource-id
+      in: query (ChatGPT) / extension config (Claude Desktop)
+      required: true
+    - name: resource-type
+      in: query (ChatGPT) / extension config (Claude Desktop)
+      required: true
+      values: [PUBLISHER, DSP, BUYER, ACTIVATE ADVERTISER]
+    note: >-
+      A connection is pinned to one resource-id/resource-type pair at creation time and
+      cannot be changed afterwards; a different account requires a separate connector.
+
+access:
+  public_signup: false
+  how_to_get_access: >-
+    Contact your PubMatic representative to request access to the MCP Server and its agents.
+  audiences: [publishers, buyers, DSPs, agencies]
+
+tools:
+- name: deal_management
+  description: Creates or clones deals (PMP, PG, Preferred, Auction Packages)
+  category: deals
+  audience: [publisher, buyer, dsp]
+  input_schema:
+    type: object
+    properties:
+      query:
+        type: string
+        description: Current input from the user
+      message_history:
+        type: array
+        description: >-
+          Conversation history as a list of messages. Each item:
+          {role: 'user'|'assistant', content: string}.
+        items:
+          type: object
+          properties:
+            role:
+              type: string
+              enum: [user, assistant]
+            content:
+              type: string
+    required: [query, message_history]
+  structured_content: deal_info
+  business_rules:
+  - 'PMP (Private Marketplace): First/Second/Fixed Price + P11-P15 priority'
+  - 'PG (Programmatic Guaranteed): Fixed Price + P5-P7 + pacing + guaranteed impressions'
+  - 'Preferred: Fixed Price + P8-P10'
+  source: https://github.com/PubMatic/pubmatic-mcp-server/blob/main/Deal%20Management/deal_create_copy_integration_guide.md
+- name: deal_troubleshooting
+  description: Diagnose and resolve deal performance issues
+  category: deals
+  audience: [publisher, buyer, dsp]
+  input_schema:
+    type: object
+    properties:
+      deal_id:
+        type: string
+        description: ID of the deal to troubleshoot
+    required: [deal_id]
+  structured_content: deal_info, performance_summary, root_causes
+  source: https://github.com/PubMatic/pubmatic-mcp-server/blob/main/Deal%20Management/deal_troubleshooting_integration_guide.md
+- name: inventory_discovery
+  description: >-
+    Search, evaluate and curate publisher supply from a natural-language campaign brief;
+    returns ranked supply packages with forecast impressions, eCPM, similarity score and a
+    match explanation.
+  category: inventory
+  audience: [buyer, agency]
+  input_schema:
+    type: object
+    properties:
+      brief:
+        type: string
+        description: >-
+          Campaign brief from the user describing objectives, audiences, markets, formats,
+          constraints, budget/flight, etc.
+      filters:
+        type: object
+        description: Optional explicit filters to guide discovery
+        properties:
+          similarity: {type: number, minimum: 0, maximum: 1}
+          content:
+            type: object
+            properties:
+              languages: {type: array, items: {type: string}}
+              genres: {type: array, items: {type: string}}
+          iabCategories: {type: array, items: {type: string}}
+          adFormats: {type: array, items: {type: string}}
+          platforms: {type: array, items: {type: string}}
+          delivery_type: {type: string}
+          format_types: {type: array, items: {type: string}}
+          standard_formats_only: {type: boolean}
+    required: [brief]
+  structured_content: metaData, packages
+  source: https://github.com/PubMatic/pubmatic-mcp-server/blob/main/Inventory%20Discovery/inventory_discovery_integration_guide.md
+- name: submit_dsp_details
+  description: >-
+    Accepts a DSP's integration configuration, fires live OpenRTB 2.5 bid requests at the
+    supplied endpoint from selected data centers, validates the bid responses, renders the
+    returned creatives and returns structured test results plus an HTML dashboard.
+  category: onboarding
+  audience: [dsp]
+  input_parameters:
+  - dsp_company_name
+  - contact_email
+  - pubmatic_dsp_id
+  - dsp_bid_endpoint_url
+  - campaign_platforms
+  - campaign_ad_formats
+  - infrastructure_data_centers
+  - num_requests
+  - custom_samples
+  structured_content: status, success_rate, successful_requests, total_requests, html_results
+  companion_skills:
+  - skills/pubmatic-dsp-launchpad-intake.md
+  - skills/pubmatic-dsp-live-setup.md
+  source: https://github.com/PubMatic/pubmatic-mcp-server/blob/main/DSP%20Onboarding/DSP_onboarding_integration_guide.md
+
+tool_discovery:
+  live_introspection: gated
+  note: >-
+    tools/list on https://mcp.pubmatic.com/mcp requires a valid bearer/OAuth token, so the
+    live tool manifest could not be read anonymously. Every tool above (name, description
+    and input schema) is transcribed from PubMatic's OWN published integration guides in
+    github.com/PubMatic/pubmatic-mcp-server, not inferred. The live server may expose
+    additional tools; nothing here is invented.
+
+x-evidence:
+- url: https://mcp.pubmatic.com/mcp
+  method: POST tools/list
+  http_status: 401
+  www_authenticate: Bearer error="invalid_token"
+  fetched: '2026-08-13'
+- url: https://api.github.com/repos/PubMatic/pubmatic-mcp-server
+  http_status: 200
+  fetched: '2026-08-13'
+- url: https://mcp.pubmatic.com/.well-known/oauth-authorization-server
+  http_status: 404
+  fetched: '2026-08-13'
+- url: https://mcp.pubmatic.com/.well-known/oauth-protected-resource
+  http_status: 404
+  fetched: '2026-08-13'

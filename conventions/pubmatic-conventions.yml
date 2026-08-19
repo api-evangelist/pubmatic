@@ -1,0 +1,100 @@
+generated: '2026-08-13'
+method: searched
+source: https://github.com/PubMatic/pubmatic-mcp-server
+note: >-
+  PubMatic's only publicly documented programmatic surface is its MCP Server, so these are
+  MCP/JSON-RPC conventions rather than REST conventions. NO Idempotency pointer is emitted:
+  PubMatic documents no idempotency key, no de-duplication window and no safe-retry contract
+  for deal_management, which is a state-creating tool — re-issuing the same "create a PMP
+  deal" call would create a second deal. That absence is the finding, and it matters more
+  here than usual because the caller is an autonomous agent.
+authentication:
+  style: bearer token or X-API-Key header; OAuth authorization-code for ChatGPT connectors
+  tenant_scoping: resource-id + resource-type, fixed per connector
+  detail: authentication/pubmatic-authentication.yml
+transport:
+  protocol: JSON-RPC 2.0 over HTTPS POST
+  endpoint: https://mcp.pubmatic.com/mcp
+  documented_alternate_base: https://mcp.pubmatic.com/v1 (tool endpoints under /v1/tools)
+  accept: application/json, text/event-stream
+  methods: [tools/list, tools/call]
+  content_negotiation: MCP structured content (result.content[] plus optional result.structuredContent)
+idempotency:
+  supported: false
+  header: null
+  scope: null
+  retention: null
+  evidence: >-
+    No Idempotency-Key or equivalent appears in any published PubMatic MCP guide, request
+    example or input schema. deal_management creates and clones deals and exposes no
+    de-duplication contract.
+  risk: >-
+    An agent retrying a timed-out deal_management call has no published way to make the retry
+    safe. Confirmation is handled conversationally ("the agent will typically ask for
+    confirmation before creating or modifying deals"), which is a UX guard, not a protocol
+    guarantee.
+pagination:
+  style: index-window
+  supported: partial
+  evidence: >-
+    inventory_discovery returns metaData.startIndex and metaData.endIndex (observed example:
+    1 and 24) alongside the packages[] array. No page-size, cursor or next-page parameter is
+    documented in the published inputSchema, so how a caller requests the next window is not
+    specified.
+  request_params: []
+  response_fields: [metaData.startIndex, metaData.endIndex]
+conversational_state:
+  supported: true
+  mechanism: >-
+    deal_management requires a message_history array of {role, content} objects on every
+    call — the CLIENT is responsible for carrying conversation state, the server does not
+    hold it. An optional params.context.conversation_id may also be supplied.
+  required_on: [deal_management]
+  note: >-
+    This is a genuine convention divergence from ordinary REST: the tool's contract is a
+    natural-language `query` plus the full prior transcript, not a typed resource body.
+filtering:
+  style: natural-language brief plus optional structured filters
+  evidence: >-
+    inventory_discovery takes a required free-text `brief` and an optional `filters` object
+    (similarity, content.languages, content.genres, iabCategories, adFormats, platforms,
+    delivery_type, format_types, standard_formats_only). The response echoes the filters the
+    agent actually interpreted back in metaData.filters, and each result carries `similarity`,
+    `matchType` and a natural-language `matchExplanation` — an explainability convention worth
+    noting.
+error_envelope:
+  shape: JSON-RPC 2.0 error object {code, message, data.details}
+  problem_json: false
+  detail: errors/pubmatic-problem-types.yml
+rate_limit_signaling:
+  documented: false
+  headers: []
+  detail: rate-limits/pubmatic-rate-limits.yml
+versioning:
+  scheme: none-published
+  evidence: >-
+    The MCP surface carries no version in the URL path (/mcp) and no version header is
+    documented. The only version strings PubMatic publishes for this surface are the Claude
+    Desktop extension bundle versions (0.1.1, 0.1.2) and a "v0.1" change-log line for the
+    submit_dsp_details tool.
+  detail: lifecycle/pubmatic-lifecycle.yml
+request_tracing:
+  request_id_header: null
+  correlation: params.context.conversation_id (optional, client-supplied)
+metadata:
+  custom_metadata_fields: false
+field_expansion:
+  supported: false
+rendering_convention:
+  note: >-
+    submit_dsp_details returns an `html_results` field and PubMatic instructs assistants to
+    render it as a rich UI artifact (e.g. dsp_test_results.html). Server-supplied HTML for
+    client rendering is an unusual convention for an agent-facing API and is recorded here
+    deliberately.
+cross_links:
+  authentication: authentication/pubmatic-authentication.yml
+  errors: errors/pubmatic-problem-types.yml
+  lifecycle: lifecycle/pubmatic-lifecycle.yml
+  rate_limits: rate-limits/pubmatic-rate-limits.yml
+  data_model: data-model/pubmatic-data-model.yml
+  mcp: mcp/pubmatic-mcp.yml

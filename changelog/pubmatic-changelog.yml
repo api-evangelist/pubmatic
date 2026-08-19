@@ -1,0 +1,61 @@
+generated: '2026-08-13'
+method: searched
+source: https://github.com/PubMatic/pubmatic-mcp-server
+note: >-
+  PubMatic operates no public dated changelog for its platform APIs. Its customer release
+  notes (help.pubmatic.com/publisher/docs/release-notes) 302 into the customer login chain.
+  What follows is the only public, dated change surface: the version history PubMatic
+  publishes in and alongside its MCP Server specification repository, plus dated SDK
+  releases read from public registries. Sparse by measurement, not by omission.
+scheme: ad-hoc
+current_version: '0.1'
+current_version_scope: PubMatic MCP Server tool specifications
+public_changelog_url: null
+gated_changelog_url: https://help.pubmatic.com/publisher/docs/release-notes
+gated_changelog_status: 302
+entries:
+- version: '0.1'
+  date: null
+  scope: submit_dsp_details (DSP Onboarding)
+  type: initial-release
+  breaking: false
+  highlights:
+  - Initial release of the submit_dsp_details tool for direct DSP intake
+  - Automated OpenRTB integration testing against the DSP's own bid endpoint
+  - Solutions-Engineer approval preparation
+  source: https://github.com/PubMatic/pubmatic-mcp-server/blob/main/DSP%20Onboarding/DSP_onboarding_integration_guide.md
+  note: PubMatic publishes this as an explicit "## Change Log" section but supplies no date.
+- version: 0.1.2
+  date: null
+  scope: PubMatic Claude Desktop MCP extension (.mcpb)
+  type: release
+  breaking: false
+  highlights:
+  - PubMatic_Claude_MCP_extension_0.1.2.mcpb and a win32 build published
+  artifacts:
+  - PubMatic_Claude_MCP_extension_0.1.2.mcpb
+  - PubMatic_Claude_MCP_extension_0.1.2_win32.mcpb
+  source: https://github.com/PubMatic/pubmatic-mcp-server/tree/main/Claude_Desktop_Extension
+- version: 0.1.1
+  date: null
+  scope: PubMatic Claude Desktop MCP extension (.mcpb)
+  type: superseded
+  breaking: false
+  highlights:
+  - Archived to Claude_Desktop_Extension/archive/v0.1.1/PubMatic_MCP_Server_0.1.1.mcpb
+  source: https://github.com/PubMatic/pubmatic-mcp-server/tree/main/Claude_Desktop_Extension/archive/v0.1.1
+repository_activity:
+  repo: PubMatic/pubmatic-mcp-server
+  created: '2025-09-17'
+  last_push: '2026-07-30'
+  stars: 7
+  note: >-
+    Repository commit messages are internal ticket references ("As per ticket ITG-127462")
+    rather than release notes, so per-change detail is not publicly legible.
+sdk_releases:
+  note: Dated releases readable from public registries; full detail in packages/pubmatic-packages.yml
+  recent:
+  - {package: flutter_openwrap_sdk, registry: pub.dev, version: 3.0.1, date: '2026-07-29'}
+  - {package: OpenWrapSDK, registry: cocoapods, version: 5.2.0, date: '2026-07-20'}
+  - {package: OpenWrapHandlerDFP, registry: cocoapods, version: 6.0.0, date: '2025-10-16'}
+  - {package: react-native-openwrap-sdk, registry: npm, version: 2.0.0, date: '2024-02-22'}

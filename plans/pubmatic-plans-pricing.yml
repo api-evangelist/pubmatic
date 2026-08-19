@@ -1,0 +1,38 @@
+generated: '2026-08-13'
+method: searched
+source: https://pubmatic.com/legal/program-descriptions/
+plan_count: 0
+pricing_page: null
+pricing_model: revenue-share / negotiated contract
+public_pricing: false
+self_service_signup: false
+note: >-
+  PubMatic publishes NO plans, tiers or prices. This is an honest zero, not a gap in the
+  search. https://pubmatic.com/pricing/ returns 404; the sitewide llms.txt (which enumerates
+  Pages, Products, Reports, Legal and more) lists no pricing page; and the only commercial
+  documents published are contracts — the Publisher Master Services Agreement, Demand Partner
+  Master Services Agreement, Activate Supply Path Optimization Agreement, AgenticOS Agreement
+  and Program Descriptions at pubmatic.com/legal/. As a supply-side platform PubMatic is
+  compensated out of a negotiated share of media spend rather than a published subscription
+  price, and access to the MCP Server is granted per-account by a PubMatic representative
+  ("Contact your PubMatic representative to request access"), not purchased.
+plans: []
+commercial_documents:
+- {name: Program Descriptions, url: 'https://pubmatic.com/legal/program-descriptions/'}
+- {name: Publisher Master Services Agreement, url: 'https://pubmatic.com/legal/publisher-master-services-agreement/'}
+- {name: Demand Partner Master Services Agreement, url: 'https://pubmatic.com/legal/demand-service-agreement/'}
+- {name: Activate Supply Path Optimization Agreement, url: 'https://pubmatic.com/legal/activate-supply-path-optimization-agreement/'}
+- {name: AgenticOS Agreement, url: 'https://pubmatic.com/legal/agenticOS-agreement/'}
+- {name: Developer Terms of Use, url: 'https://pubmatic.com/legal/developer-terms-use/'}
+- {name: PubMatic Connect Data Provider Agreement, url: 'https://pubmatic.com/legal/pubmatic-connect-data-provider-agreement/'}
+how_to_get_access:
+  route: sales
+  contact: https://pubmatic.com/contact-us/
+  api_access: >-
+    MCP Server and agent access is provisioned by a PubMatic Solutions Engineer, who issues
+    the resource-id and confirms the account has API access enabled.
+x-evidence:
+- {url: 'https://pubmatic.com/pricing/', http_status: 404, fetched: '2026-08-13'}
+- {url: 'https://pubmatic.com/legal/', http_status: 200, fetched: '2026-08-13'}
+- {url: 'https://pubmatic.com/llms.txt', http_status: 200, fetched: '2026-08-13'}
+- {url: 'https://pubmatic.com/contact-us/', http_status: 200, fetched: '2026-08-13'}
