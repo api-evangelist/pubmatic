@@ -5,7 +5,7 @@
       "source": "https://pubmatic.com/news/feed/",
       "feed_url": "https://pubmatic.com/news/feed/",
       "title": "",
-      "saved": 1,
+      "saved": 0,
       "method": "feed"
     },
     {
@@ -14,8 +14,15 @@
       "title": "",
       "saved": 0,
       "method": "discovered"
+    },
+    {
+      "source": "https://pubmatic.com/resources/?type=blog",
+      "feed_url": "https://pubmatic.com/resources/?type=blog",
+      "title": "",
+      "saved": 0,
+      "method": "none"
     }
   ],
-  "fetched": "2026-08-15T12:11:08Z",
+  "fetched": "2026-08-22T20:20:02Z",
   "post_count": 35
 }
