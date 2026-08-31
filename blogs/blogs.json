@@ -3,26 +3,17 @@
   "feeds": [
     {
       "source": "https://pubmatic.com/news/feed/",
-      "feed_url": "https://pubmatic.com/news/feed/",
-      "title": "",
-      "saved": 0,
-      "method": "feed"
-    },
-    {
-      "source": "https://pubmatic.com/news/",
-      "feed_url": "https://pubmatic.com/news/feed/",
-      "title": "",
-      "saved": 0,
-      "method": "discovered"
+      "error": "HTTPError"
     },
     {
       "source": "https://pubmatic.com/resources/?type=blog",
-      "feed_url": "https://pubmatic.com/resources/?type=blog",
-      "title": "",
-      "saved": 0,
-      "method": "none"
+      "error": "HTTPError"
+    },
+    {
+      "source": "https://pubmatic.com/news/",
+      "error": "HTTPError"
     }
   ],
-  "fetched": "2026-08-22T20:20:02Z",
-  "post_count": 35
+  "fetched": "2026-08-30T22:33:40Z",
+  "post_count": 36
 }
