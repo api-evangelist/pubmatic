@@ -1,0 +1,1 @@
+{"resource":"https://mcp.pubmatic.com/mcp","resource_name":"PubMatic MCP Server","authorization_servers":["https://api.pubmatic.com/v2/oauth"],"scopes_supported":["mcp:tools:read","mcp:tools:write"],"bearer_methods_supported":["header"]}
