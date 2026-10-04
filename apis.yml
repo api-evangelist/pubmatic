@@ -22,16 +22,19 @@ description: 'PubMatic is a Redwood City, California-headquartered independent t
   any PubMatic host.'
 type: Index
 deliveryModel:
-  model: unknown
+  model: saas
+  license_evidence:
+    not_product:
+    - pubmatic/pubmatic-mcp-server
   open_source: unknown
   commercial: true
   callable_host: false
-  label: Delivery model not determined — needs a product licence on record
+  label: Hosted service · you call their endpoint
   confidence: low
   source:
   - pricing
-  - repository-unlicensed
-  generated: '2026-08-28'
+  - repository-not-product
+  generated: '2026-09-25'
   method: derived
 accessModel:
   pricing: unknown
@@ -64,7 +67,7 @@ tags:
 - Identity
 - Curation
 - Auction Packages
-- Agentic AI
+- AI Agents
 tags_raw:
 - Advertising
 - AdTech
@@ -104,6 +107,13 @@ apis:
   humanURL: https://github.com/PubMatic/pubmatic-mcp-server
   baseURL: https://mcp.pubmatic.com/mcp
   tags:
+  - MCP
+  - AI Agents
+  - Programmatic Advertising
+  - Deals
+  - Inventory Discovery
+  - DSP Onboarding
+  tags_raw:
   - MCP
   - Agentic AI
   - Programmatic Advertising
