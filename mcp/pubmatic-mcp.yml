@@ -235,3 +235,20 @@ x-evidence:
 - url: https://mcp.pubmatic.com/.well-known/oauth-protected-resource
   http_status: 404
   fetched: '2026-08-13'
+rfc9728:
+  endpoint: https://mcp.pubmatic.com/mcp
+  metadata_url: https://apps.pubmatic.com/mcpserver/external/.well-known/oauth-protected-resource
+  discovered_via: WWW-Authenticate resource_metadata on an anonymous POST initialize
+  fetched: '2026-09-25'
+  http_status: 200
+  content_type: application/json
+  document:
+    resource: https://mcp.pubmatic.com/mcp
+    authorization_servers:
+    - https://api.pubmatic.com/v2/oauth
+    scopes_supported:
+    - mcp:tools:read
+    - mcp:tools:write
+    bearer_methods_supported:
+    - header
+    resource_name: PubMatic MCP Server
