@@ -10,31 +10,13 @@ checked:
 - https://repo1.maven.org/maven2
 - https://rubygems.org/api/v1
 - https://vendor-list.consensu.org/v3/vendor-list.json
+- https://cdn.cocoapods.org/all_pods.txt
+- https://cert.appdefensealliance.org/certifications
+- https://play.google.com/sdks
+- https://search.maven.org/solrsearch/select
+- google-play/integrations/google-play-integration-edges.yml
 marketplace_apps: []
 edges:
-- partner_name: Hightouch
-  partner: hightouch
-  partner_match: aggregator
-  marketplace: coverage
-  channel: partner-built
-  direction: partner-built
-  type: coverage
-  relationship: connector-coverage
-  evidence: https://hightouch.com/docs/destinations/pubmatic
-  coverage_role:
-  - destination
-  cdp_signals:
-    destination:
-      catalog_entries:
-      - pubmatic
-      status: released
-      sync_types:
-      - Audience data
-      - Hashed email (HEM) audience
-      sync_modes:
-      - incremental
-  detected_by: sweep-cdp.py
-  first_seen: '2026-10-14'
 - partner_name: IAB Europe TCF Global Vendor List
   partner: null
   partner_match: domain
@@ -102,4 +84,77 @@ edges:
     detected: '2026-10-18'
   detected_by: sweep-official-sdks.py
   first_seen: '2026-10-18'
+- partner_name: Hightouch
+  partner: hightouch
+  partner_match: aggregator
+  marketplace: coverage
+  channel: partner-built
+  direction: partner-built
+  type: coverage
+  relationship: connector-coverage
+  evidence: https://hightouch.com/docs/destinations/pubmatic
+  coverage_role:
+  - destination
+  cdp_signals:
+    destination:
+      catalog_entries:
+      - pubmatic
+      status: released
+      sync_types:
+      - Audience data
+      - Hashed email (HEM) audience
+      sync_modes:
+      - incremental
+  detected_by: sweep-cdp.py
+  first_seen: '2026-10-14'
+- partner_name: CocoaPods trunk
+  partner: null
+  partner_match: register
+  type: register
+  channel: package-registry
+  relationship: distribution-channel
+  direction: provider-built
+  evidence: https://cocoapods.org/pods/AppLovinPubMaticAdapter
+  category: iOS SDK (CocoaPods)
+  contract_reference:
+    register: CocoaPods trunk (cdn.cocoapods.org Specs; github.com/CocoaPods/Specs)
+    spec_file: null
+    role: cocoapods-publisher
+    registered_name: PubMatic
+    matched_domain: pubmatic.com
+    matched_by: domain
+    pods:
+    - pod: AppLovinPubMaticAdapter
+      version: 2.1.0
+      homepage: https://community.pubmatic.com/display/IS/
+      deprecated: false
+    - pod: IronSourcePubMaticAdapter
+      version: 3.0.0
+      homepage: https://community.pubmatic.com/display/IS/
+      deprecated: false
+    signal_note: latest podspec homepage (domain) + authors (name); pods, versions and counts are context
+    detected_by: sweep-mobile-sdk-index.py
+    detected: '2026-10-21'
+  detected_by: sweep-mobile-sdk-index.py
+  first_seen: '2026-10-21'
+- partner_name: Google Play Developer (Google Play SDK Index)
+  partner: google-play
+  partner_match: mirror
+  mirror_match: domain
+  type: marketplace
+  relationship: platform-app
+  direction: third-party
+  channel: partner-built
+  marketplace: Google Play SDK Index
+  evidence: https://play.google.com/sdks/details/com-pubmatic-sdk-iab-omsdk
+  mirror_of: google-play/integrations/google-play-integration-edges.yml
+  apps:
+  - PubMatic IAB SDK
+  - PubMatic OpenWrap SDK
+  listing_count: 1
+  detected: '2026-10-21'
+  detected_by: mirror-platform-listings.py
+  category: mobile SDK (ads)
+  publisher_verified:
+  - Registered in Google Play SDK Console
 source: https://hightouch.com/docs/destinations/pubmatic
